@@ -1,0 +1,12 @@
+---
+title: "About"
+---
+
+## Background
+I grew up with a background in engineering and geographic information science, completing my Bachelor of Engineering in Surveying and Mapping Engineering at Tongji University followed by a Master of Science in GIS at the University of Illinois at Urbana-Champaign. Before starting the Master of Data Science (MDS) program at UBC, I worked as a GIS Developer at Mississippi State University’s Geosystems Research Institute. My work focused on full-stack geospatial application development, spatial statistics, and database architecture—building interactive decision-support tools like the Conservation Reserve Program Menu Tool and regional spatial analytics platforms.
+
+## Why Data Science
+Throughout my work with spatial systems, I found that the most compelling challenges always came down to data: extracting signal from massive spatial datasets, building robust statistical models, and automating complex analytical pipelines. While GIS gave me a strong foundation in spatial analysis and visualization, I joined the MDS program at UBC to formalize and expand my toolkit in machine learning, high-performance computing, and structured data engineering. My goal is to bridge complex data science methodologies with real-world spatial and environmental problem-solving.
+
+## Outside of Data Science
+Outside of coursework and coding, I enjoy photography, exploring local food spots, and traveling—with recent trips taking me through New Zealand, Japan, and California. On weekends, you’ll usually find me trying out new restaurants around Richmond and Vancouver, editing photos, or catching up on road trips and outdoor exploring.

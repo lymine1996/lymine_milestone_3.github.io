@@ -1,0 +1,6 @@
+---
+title: "Ethan Liang"
+---
+![Profile](images/profile.jpg){width=250px}
+
+This is the website for DSCI_521.

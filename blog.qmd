@@ -1,0 +1,8 @@
+---
+title: "Blog"
+listing:
+  contents: posts
+  sort: "date desc"
+---
+
+![Orientation day on campus.](images/orientation.jpg)
