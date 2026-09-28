@@ -253,7 +253,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="model-fitting-in-python-reading-r-objects" class="level2">
 <h2 class="anchored" data-anchor-id="model-fitting-in-python-reading-r-objects">2. Model Fitting in Python (Reading R Objects)</h2>
 <p>Python accesses that R summary object directly using r.species_summary, fits a linear regression model on raw penguin data passed from R, and computes predicted values.</p>
-<p>#| label: python-modeling</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1340,7 +1339,6 @@ Model Fit Complete (R^2 = 0.7600)</code></pre>
 <section id="visualizing-python-predictions-back-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-python-predictions-back-in-r">3. Visualizing Python Predictions Back in R</h2>
 <p>R retrieves the Python model results via py$predictions and renders the final comparative plot using ggplot2.</p>
-<p>#| label: fig-r-py-visualization #| fig-cap: “Actual vs.&nbsp;Predicted Penguin Body Mass (Computed in Python, Rendered in R).” #| fig-width: 8 #| fig-height: 5.5</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1368,9 +1366,14 @@ Model Fit Complete (R^2 = 0.7600)</code></pre>
 ℹ Please use `linewidth` instead.</code></pre>
 </div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-r-py-visualization" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-r-py-visualization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-r-py-visualization-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-r-py-visualization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Actual vs.&nbsp;Predicted Penguin Body Mass (Computed in Python, Rendered in R).
+</figcaption>
 </figure>
 </div>
 </div>
