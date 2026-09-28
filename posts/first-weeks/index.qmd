@@ -3,3 +3,5 @@ title: "My first weeks in MDS"
 author: "Ethan Liang"
 date: 2026-09-10
 ---
+
+![Orientation day on campus.](../../images/orientation.jpg)

@@ -1,0 +1,89 @@
+---
+title: "Python Post"
+author: "Ethan Liang"
+date: 2026-09-26
+categories: [Python, Data Analysis, Visualization]
+format:
+  html:
+    code-fold: false
+    toc: true
+---
+
+## Introduction & Data Source
+
+In this analysis, we explore the physical characteristics of penguin species observed in the Palmer Archipelago, Antarctica. 
+
+The dataset used in this post is the **palmerpenguins** dataset, collected by Dr. Kristen Gorman and the Palmer Station, Antarctica LTER. The original source is on the official [palmerpenguins documentation page](https://allisonhorst.github.io/palmerpenguins/).
+
+---
+
+## 1. Data Loading & Cleaning
+
+First, load the dataset using `palmerpenguins` and clean it by removing rows with missing physical measurements.
+
+```{python}
+#| label: data-loading
+import pandas as pd
+import numpy as np
+from palmerpenguins import load_penguins
+
+# Load raw penguins dataset
+df_raw = load_penguins()
+
+# Clean missing values across key physical traits
+features = ['species', 'island', 'bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g', 'sex']
+penguins = df_raw.dropna(subset=features).copy()
+
+print(f"Loaded {len(penguins)} complete penguin observations.")
+penguins.head()
+
+#| label: summary-stats
+# Group by species and compute summary statistics
+species_stats = (
+    penguins.groupby('species')
+    .agg(
+        count=('species', 'count'),
+        mean_mass_g=('body_mass_g', 'mean'),
+        std_mass_g=('body_mass_g', 'std'),
+        mean_flipper_mm=('flipper_length_mm', 'mean'),
+        mean_bill_len_mm=('bill_length_mm', 'mean')
+    )
+    .round(2)
+    .reset_index()
+)
+
+species_stats
+
+#| label: fig-flipper-vs-mass
+#| fig-cap: "Flipper Length vs. Body Mass across Palmer Penguin Species."
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style="whitegrid")
+
+plt.figure(figsize=(9, 6))
+scatter = sns.scatterplot(
+    data=penguins,
+    x="flipper_length_mm",
+    y="body_mass_g",
+    hue="species",
+    style="sex",
+    s=70,
+    alpha=0.8,
+    palette="Set2"
+)
+
+plt.title("Penguin Flipper Length vs. Body Mass", fontsize=14, fontweight="bold")
+plt.xlabel("Flipper Length (mm)", fontsize=12)
+plt.ylabel("Body Mass (g)", fontsize=12)
+plt.legend(title="Species & Sex", bbox_to_anchor=(1.05, 1), loc="upper left")
+plt.tight_layout()
+plt.show()
+```
+
+Summary of Results
+Strong Linear Relationship: There is a clear positive correlation between flipper length and body mass across all species.
+
+Cluster Separation: Gentoo penguins form a distinct cluster in the upper-right corner (longer flippers, larger body mass), whereas Adelie and Chinstrap penguins overlap considerably in body mass but show separation along bill length and flipper length dimensions.
+
+Sexual Dimorphism: Within every species, male penguins systematically exhibit higher body mass and longer flipper lengths than females.

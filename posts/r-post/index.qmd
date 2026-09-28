@@ -1,0 +1,90 @@
+---
+title: "R Post"
+author: "Ethan Liang"
+date: 2026-09-26
+categories: [R, Tidyverse, Visualization]
+format:
+  html:
+    code-fold: false
+    toc: true
+---
+
+## Introduction & Data Source
+
+This analysis evaluates morphological variations among Antarctic penguin species observed at the Palmer Station.
+
+The dataset used in this analysis is from the R package `palmerpenguins`, created by Allison Horst, Alison Hill, and Kristen Gorman. Learn more on the [palmerpenguins official site](https://allisonhorst.github.io/palmerpenguins/).
+
+---
+
+## 1. Data Cleaning and Preparation
+
+We load the `palmerpenguins` package alongside `tidyverse` to filter out missing records and inspect key variables.
+
+```{r}
+#| label: r-data-prep
+#| message: false
+#| warning: false
+library(palmerpenguins)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Clean dataset removing NA values in body metrics
+penguins_clean <- penguins %>%
+  drop_na(species, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, sex) %>%
+  mutate(
+    species = as.character(species),
+    bill_ratio = bill_length_mm / bill_depth_mm
+  )
+
+glimpse(penguins_clean)
+
+#| label: r-summary-table
+bill_summary <- penguins_clean %>%
+  group_by(species, island) %>%
+  summarise(
+    n = n(),
+    mean_bill_len = mean(bill_length_mm),
+    mean_bill_dep = mean(bill_depth_mm),
+    mean_bill_ratio = mean(bill_ratio),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(mean_bill_ratio))
+
+knitr::kable(bill_summary, digits = 2, col.names = c("Species", "Island", "Count", "Mean Length (mm)", "Mean Depth (mm)", "Bill Length/Depth Ratio"))
+
+#| label: fig-r-bill-dimensions
+#| fig-cap: "Bill Length vs. Bill Depth across Palmer Penguin Species."
+#| fig-width: 8
+#| fig-height: 5.5
+
+ggplot(penguins_clean, aes(x = bill_length_mm, y = bill_depth_mm, color = species, shape = sex)) +
+  geom_point(size = 2.8, alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", size = 0.8) +
+  scale_color_brewer(palette = "Set1") +
+  labs(
+    title = "Bill Morphological Dimensions by Species",
+    subtitle = "Exhibiting Simpson's Paradox across overall vs. species-level trends",
+    x = "Bill Length (mm)",
+    y = "Bill Depth (mm)",
+    color = "Species",
+    shape = "Sex"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "right"
+  )
+```
+
+Summary of Results
+Simpson's Paradox in Action: If we looked at the dataset as a whole without grouping by species, bill depth and length would appear uncorrelated or negatively correlated. However, within each individual species, there is a clear positive correlation between bill length and bill depth.
+
+Species Cluster Distinctiveness:
+
+Adélie: Short bill length, high bill depth.
+
+Chinstrap: Long bill length, high bill depth.
+
+Gentoo: Long bill length, low bill depth.

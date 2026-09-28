@@ -1,10 +1,38 @@
 [
   {
-    "objectID": "blog.html",
-    "href": "blog.html",
-    "title": "Blog",
+    "objectID": "posts/r-post/index.html",
+    "href": "posts/r-post/index.html",
+    "title": "R Post",
     "section": "",
-    "text": "Orientation day on campus.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMy first weeks in MDS\n\n\n\n\n\n\n\n\nSep 10, 2026\n\n\nEthan Liang\n\n\n\n\n\nNo matching items"
+    "text": "This analysis evaluates morphological variations among Antarctic penguin species observed at the Palmer Station.\nThe dataset used in this analysis is from the R package palmerpenguins, created by Allison Horst, Alison Hill, and Kristen Gorman. Learn more on the palmerpenguins official site."
+  },
+  {
+    "objectID": "posts/r-post/index.html#introduction-data-source",
+    "href": "posts/r-post/index.html#introduction-data-source",
+    "title": "R Post",
+    "section": "",
+    "text": "This analysis evaluates morphological variations among Antarctic penguin species observed at the Palmer Station.\nThe dataset used in this analysis is from the R package palmerpenguins, created by Allison Horst, Alison Hill, and Kristen Gorman. Learn more on the palmerpenguins official site."
+  },
+  {
+    "objectID": "posts/r-post/index.html#data-cleaning-and-preparation",
+    "href": "posts/r-post/index.html#data-cleaning-and-preparation",
+    "title": "R Post",
+    "section": "1. Data Cleaning and Preparation",
+    "text": "1. Data Cleaning and Preparation\nWe load the palmerpenguins package alongside tidyverse to filter out missing records and inspect key variables.\n\nlibrary(palmerpenguins)\nlibrary(dplyr)\nlibrary(ggplot2)\nlibrary(tidyr)\n\n# Clean dataset removing NA values in body metrics\npenguins_clean &lt;- penguins %&gt;%\n  drop_na(species, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, sex) %&gt;%\n  mutate(\n    species = as.character(species),\n    bill_ratio = bill_length_mm / bill_depth_mm\n  )\n\nglimpse(penguins_clean)\n\nRows: 333\nColumns: 9\n$ species           &lt;chr&gt; \"Adelie\", \"Adelie\", \"Adelie\", \"Adelie\", \"Adelie\", \"A…\n$ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse…\n$ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 39.2, 41.1, 38.6…\n$ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, 19.3, 20.6, 17.8, 19.6, 17.6, 21.2…\n$ flipper_length_mm &lt;int&gt; 181, 186, 195, 193, 190, 181, 195, 182, 191, 198, 18…\n$ body_mass_g       &lt;int&gt; 3750, 3800, 3250, 3450, 3650, 3625, 4675, 3200, 3800…\n$ sex               &lt;fct&gt; male, female, female, female, male, female, male, fe…\n$ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007…\n$ bill_ratio        &lt;dbl&gt; 2.090909, 2.270115, 2.238889, 1.901554, 1.907767, 2.…\n\n#| label: r-summary-table\nbill_summary &lt;- penguins_clean %&gt;%\n  group_by(species, island) %&gt;%\n  summarise(\n    n = n(),\n    mean_bill_len = mean(bill_length_mm),\n    mean_bill_dep = mean(bill_depth_mm),\n    mean_bill_ratio = mean(bill_ratio),\n    .groups = \"drop\"\n  ) %&gt;%\n  arrange(desc(mean_bill_ratio))\n\nknitr::kable(bill_summary, digits = 2, col.names = c(\"Species\", \"Island\", \"Count\", \"Mean Length (mm)\", \"Mean Depth (mm)\", \"Bill Length/Depth Ratio\"))\n\n\n\n\n\n\n\n\n\n\n\n\nSpecies\nIsland\nCount\nMean Length (mm)\nMean Depth (mm)\nBill Length/Depth Ratio\n\n\n\n\nGentoo\nBiscoe\n119\n47.57\n15.00\n3.18\n\n\nChinstrap\nDream\n68\n48.83\n18.42\n2.65\n\n\nAdelie\nBiscoe\n44\n38.98\n18.37\n2.13\n\n\nAdelie\nTorgersen\n47\n39.04\n18.45\n2.12\n\n\nAdelie\nDream\n55\n38.52\n18.24\n2.12\n\n\n\n\n#| label: fig-r-bill-dimensions\n#| fig-cap: \"Bill Length vs. Bill Depth across Palmer Penguin Species.\"\n#| fig-width: 8\n#| fig-height: 5.5\n\nggplot(penguins_clean, aes(x = bill_length_mm, y = bill_depth_mm, color = species, shape = sex)) +\n  geom_point(size = 2.8, alpha = 0.8) +\n  geom_smooth(method = \"lm\", se = FALSE, linetype = \"dashed\", size = 0.8) +\n  scale_color_brewer(palette = \"Set1\") +\n  labs(\n    title = \"Bill Morphological Dimensions by Species\",\n    subtitle = \"Exhibiting Simpson's Paradox across overall vs. species-level trends\",\n    x = \"Bill Length (mm)\",\n    y = \"Bill Depth (mm)\",\n    color = \"Species\",\n    shape = \"Sex\"\n  ) +\n  theme_minimal(base_size = 12) +\n  theme(\n    plot.title = element_text(face = \"bold\"),\n    legend.position = \"right\"\n  )\n\n\n\n\n\n\n\n\nSummary of Results Simpson’s Paradox in Action: If we looked at the dataset as a whole without grouping by species, bill depth and length would appear uncorrelated or negatively correlated. However, within each individual species, there is a clear positive correlation between bill length and bill depth.\nSpecies Cluster Distinctiveness:\nAdélie: Short bill length, high bill depth.\nChinstrap: Long bill length, high bill depth.\nGentoo: Long bill length, low bill depth."
+  },
+  {
+    "objectID": "posts/first-weeks/index.html",
+    "href": "posts/first-weeks/index.html",
+    "title": "My first weeks in MDS",
+    "section": "",
+    "text": "Orientation day on campus."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Ethan Liang",
+    "section": "",
+    "text": "Profile\n\n\nThis is the website for DSCI_521."
   },
   {
     "objectID": "about.html",
@@ -35,10 +63,31 @@
     "text": "Outside of Data Science\nOutside of coursework and coding, I enjoy photography, exploring local food spots, and traveling—with recent trips taking me through New Zealand, Japan, and California. On weekends, you’ll usually find me trying out new restaurants around Richmond and Vancouver, editing photos, or catching up on road trips and outdoor exploring."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Ethan Liang",
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "Blog",
     "section": "",
-    "text": "Profile\n\n\nThis is the website for DSCI_521."
+    "text": "Python & R Combined Post\n\n\n\n\n\n\n\n\nSep 26, 2026\n\n\nEthan Liang\n\n\n\n\n\n\n\n\n\n\n\n\nPython Post\n\n\n\n\n\n\n\n\nSep 26, 2026\n\n\nEthan Liang\n\n\n\n\n\n\n\n\n\n\n\n\nR Post\n\n\n\n\n\n\n\n\nSep 26, 2026\n\n\nEthan Liang\n\n\n\n\n\n\n\n\n\n\n\n\nMy first weeks in MDS\n\n\n\n\n\n\n\n\nSep 10, 2026\n\n\nEthan Liang\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/python-post/index.html",
+    "href": "posts/python-post/index.html",
+    "title": "Python Post",
+    "section": "",
+    "text": "In this analysis, we explore the physical characteristics of penguin species observed in the Palmer Archipelago, Antarctica.\nThe dataset used in this post is the palmerpenguins dataset, collected by Dr. Kristen Gorman and the Palmer Station, Antarctica LTER. The original source is on the official palmerpenguins documentation page."
+  },
+  {
+    "objectID": "posts/python-post/index.html#introduction-data-source",
+    "href": "posts/python-post/index.html#introduction-data-source",
+    "title": "Python Post",
+    "section": "",
+    "text": "In this analysis, we explore the physical characteristics of penguin species observed in the Palmer Archipelago, Antarctica.\nThe dataset used in this post is the palmerpenguins dataset, collected by Dr. Kristen Gorman and the Palmer Station, Antarctica LTER. The original source is on the official palmerpenguins documentation page."
+  },
+  {
+    "objectID": "posts/python-post/index.html#data-loading-cleaning",
+    "href": "posts/python-post/index.html#data-loading-cleaning",
+    "title": "Python Post",
+    "section": "1. Data Loading & Cleaning",
+    "text": "1. Data Loading & Cleaning\nFirst, load the dataset using palmerpenguins and clean it by removing rows with missing physical measurements.\n\nimport pandas as pd\nimport numpy as np\nfrom palmerpenguins import load_penguins\n\n# Load raw penguins dataset\ndf_raw = load_penguins()\n\n# Clean missing values across key physical traits\nfeatures = ['species', 'island', 'bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g', 'sex']\npenguins = df_raw.dropna(subset=features).copy()\n\nprint(f\"Loaded {len(penguins)} complete penguin observations.\")\npenguins.head()\n\n#| label: summary-stats\n# Group by species and compute summary statistics\nspecies_stats = (\n    penguins.groupby('species')\n    .agg(\n        count=('species', 'count'),\n        mean_mass_g=('body_mass_g', 'mean'),\n        std_mass_g=('body_mass_g', 'std'),\n        mean_flipper_mm=('flipper_length_mm', 'mean'),\n        mean_bill_len_mm=('bill_length_mm', 'mean')\n    )\n    .round(2)\n    .reset_index()\n)\n\nspecies_stats\n\n#| label: fig-flipper-vs-mass\n#| fig-cap: \"Flipper Length vs. Body Mass across Palmer Penguin Species.\"\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"whitegrid\")\n\nplt.figure(figsize=(9, 6))\nscatter = sns.scatterplot(\n    data=penguins,\n    x=\"flipper_length_mm\",\n    y=\"body_mass_g\",\n    hue=\"species\",\n    style=\"sex\",\n    s=70,\n    alpha=0.8,\n    palette=\"Set2\"\n)\n\nplt.title(\"Penguin Flipper Length vs. Body Mass\", fontsize=14, fontweight=\"bold\")\nplt.xlabel(\"Flipper Length (mm)\", fontsize=12)\nplt.ylabel(\"Body Mass (g)\", fontsize=12)\nplt.legend(title=\"Species & Sex\", bbox_to_anchor=(1.05, 1), loc=\"upper left\")\nplt.tight_layout()\nplt.show()\n\nLoaded 333 complete penguin observations.\n\n\n\n\n\n\n\n\n\nSummary of Results Strong Linear Relationship: There is a clear positive correlation between flipper length and body mass across all species.\nCluster Separation: Gentoo penguins form a distinct cluster in the upper-right corner (longer flippers, larger body mass), whereas Adelie and Chinstrap penguins overlap considerably in body mass but show separation along bill length and flipper length dimensions.\nSexual Dimorphism: Within every species, male penguins systematically exhibit higher body mass and longer flipper lengths than females."
   }
 ]
