@@ -16,6 +16,8 @@ ehthumbs.db
 .RData
 .Ruserdata
 .env
+.venv
+renv/library
 
 # Editor & IDE configs
 .vscode/
