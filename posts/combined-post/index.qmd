@@ -1,5 +1,123 @@
 ---
-title: "Python & R Combined Post"
+title: "Combining R and Python with Reticulate"
 author: "Ethan Liang"
-date: 2026-09-26
+date: "2026-09-28"
+categories: [R, Python, Reticulate, Polyglot]
+format:
+  html:
+    code-fold: false
+    toc: true
 ---
+
+## Introduction & Data Source
+
+Data science teams frequently use both R and Python for their unique strengths—such as `ggplot2` for high-quality visualizations in R and `scikit-learn` for machine learning in Python. 
+
+In this post, we demonstrate how to bridge both execution engines seamlessly within a single Quarto document using the `reticulate` package.
+
+The dataset used is the **palmerpenguins** dataset, collected by Dr. Kristen Gorman and the Palmer Station LTER. You can read more on the [official palmerpenguins documentation page](https://allisonhorst.github.io/palmerpenguins/).
+
+---
+
+## 1. Data Preparation in R
+
+We start in an **R chunk** by loading `palmerpenguins`, cleaning missing records, and computing species-level baseline aggregates.
+
+```{r}
+#| label: r-data-prep
+#| message: false
+#| warning: false
+library(palmerpenguins)
+library(dplyr)
+library(tidyr)
+library(reticulate)
+
+# Clean dataset removing NAs across key physical measurements
+penguins_clean <- penguins %>%
+  drop_na(species, bill_length_mm, flipper_length_mm, body_mass_g) %>%
+  mutate(species = as.character(species))
+
+# Calculate summary metrics by species in R
+species_summary <- penguins_clean %>%
+  group_by(species) %>%
+  summarise(
+    n = n(),
+    mean_flipper_mm = mean(flipper_length_mm),
+    mean_mass_g = mean(body_mass_g),
+    mean_bill_len_mm = mean(bill_length_mm),
+    .groups = "drop"
+  )
+
+species_summary
+```
+
+## 2. Model Fitting in Python (Reading R Objects)
+
+Python accesses that R summary object directly using r.species_summary, fits a linear regression model on raw penguin data passed from R, and computes predicted values.
+
+```{python}
+#| label: python-modeling
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+# Access R summary object in Python
+print("Accessing R species_summary inside Python:")
+print(r.species_summary)
+
+# Convert R dataframe to Python DataFrame
+df_py = r.penguins_clean
+
+# Define predictor features (X) and target variable (y)
+X = df_py[['flipper_length_mm', 'bill_length_mm']]
+y = df_py['body_mass_g']
+
+# Fit Linear Regression model in Python
+model = LinearRegression()
+model.fit(X, y)
+
+# Generate predictions and store summary metrics
+df_py['predicted_mass_g'] = model.predict(X)
+df_py['residual_g'] = df_py['body_mass_g'] - df_py['predicted_mass_g']
+
+# Extract model coefficients for evaluation
+r2_score = model.score(X, y)
+coef_flipper = model.coef_[0]
+coef_bill = model.coef_[1]
+intercept = model.intercept_
+
+print(f"\nModel Fit Complete (R^2 = {r2_score:.4f})")
+print(f"Formula: Body Mass = {intercept:.2f} + {coef_flipper:.2f}*(Flipper Length) + {coef_bill:.2f}*(Bill Length)")
+```
+
+## 3. Visualizing Python Predictions Back in R
+
+R retrieves the Python model results via py$predictions and renders the final comparative plot using ggplot2.
+
+```{r}
+#| label: fig-r-py-visualization
+#| fig-cap: "Actual vs. Predicted Penguin Body Mass (Computed in Python, Rendered in R)."
+#| fig-width: 8
+#| fig-height: 5.5
+library(ggplot2)
+
+# Access Python object in R using py$...
+penguin_preds <- py$df_py
+
+ggplot(penguin_preds, aes(x = body_mass_g, y = predicted_mass_g, color = species)) +
+  geom_point(alpha = 0.7, size = 2.5) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray40", size = 0.8) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(
+    title = "Actual vs. Predicted Body Mass Across Penguin Species",
+    subtitle = "Model fit in Python (scikit-learn) and plotted in R (ggplot2)",
+    x = "Actual Body Mass (g)",
+    y = "Predicted Body Mass (g)",
+    color = "Species"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "right"
+  )
+```

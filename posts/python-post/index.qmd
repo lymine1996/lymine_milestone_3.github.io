@@ -36,7 +36,9 @@ penguins = df_raw.dropna(subset=features).copy()
 
 print(f"Loaded {len(penguins)} complete penguin observations.")
 penguins.head()
+```
 
+```{python}
 #| label: summary-stats
 # Group by species and compute summary statistics
 species_stats = (
@@ -53,7 +55,9 @@ species_stats = (
 )
 
 species_stats
+```
 
+```{python}
 #| label: fig-flipper-vs-mass
 #| fig-cap: "Flipper Length vs. Body Mass across Palmer Penguin Species."
 import matplotlib.pyplot as plt

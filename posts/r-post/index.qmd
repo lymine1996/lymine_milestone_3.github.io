@@ -39,7 +39,9 @@ penguins_clean <- penguins %>%
   )
 
 glimpse(penguins_clean)
+```
 
+```{r}
 #| label: r-summary-table
 bill_summary <- penguins_clean %>%
   group_by(species, island) %>%
@@ -53,7 +55,9 @@ bill_summary <- penguins_clean %>%
   arrange(desc(mean_bill_ratio))
 
 knitr::kable(bill_summary, digits = 2, col.names = c("Species", "Island", "Count", "Mean Length (mm)", "Mean Depth (mm)", "Bill Length/Depth Ratio"))
+```
 
+```{r}
 #| label: fig-r-bill-dimensions
 #| fig-cap: "Bill Length vs. Bill Depth across Palmer Penguin Species."
 #| fig-width: 8
