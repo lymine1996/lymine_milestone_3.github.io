@@ -58,18 +58,6 @@ uv sync
 
 ---
 
-### 4. Render and Preview the Website
-
-Once both environments are configured, you can build and serve the Quarto website locally using `uv run` to ensure Quarto executes within your project's Python environment:
-
-```bash
-uv run quarto preview
-```
-
-This will automatically start a local development server (usually at `http://localhost:4200`) and open the website in your default web browser. Any changes made to `.qmd` files will trigger an automatic preview rebuild.
-
----
-
 ## 🔨 Building / Rendering Static Files
 
 To render the static HTML files into the `_site/` directory (e.g., for production deployment):
@@ -88,16 +76,6 @@ quarto preview
 ```
 
 This will automatically start a local development server (usually at `http://localhost:4200`) and open the website in your default web browser. Any changes made to `.qmd` files will trigger an automatic preview rebuild.
-
----
-
-## 🔨 Building / Rendering static files
-
-To render the static HTML files into the `_site/` directory (e.g., for deployment):
-
-```bash
-quarto render
-```
 
 ---
 
